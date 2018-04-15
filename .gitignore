@@ -1,0 +1,9 @@
+GT*
+*GPATH
+*GTAGS
+*GRTAGS
+*build/
+*.idea
+*cmake-build-debug/
+*html/
+*latex/
