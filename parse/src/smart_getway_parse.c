@@ -7,7 +7,7 @@
 
 
 
-#define CASE_FUNC_CONFIG "../config/smart_getway_config.json"
+#define CASE_FUNC_CONFIG "/etc/smart_getway/smart_getway_config.json"
 #define PTHREAD_NAME_LENGTH 32
 static char *json_file = NULL;
 char* json_file_load(const char *filename)
@@ -95,7 +95,7 @@ int  get_sys_baud_rate()
     return baud_rate;
 }
 
-int get_sys_server_ip(char *ip_str)
+char* get_sys_server_ip(char *ip_str)
 {
     cJSON *item;
     if(!json_file) {
@@ -113,9 +113,10 @@ int get_sys_server_ip(char *ip_str)
     item=cJSON_GetObjectItem(object,"server_ip");
 
     if(item != NULL) {
-        printf("%s\n",item->valuestring);
+        
         strcpy(ip_str,item->valuestring);
     }
+    printf("%s,%d,%p\n",ip_str,strlen(ip_str),ip_str);
     cJSON_Delete(object);
     return ip_str;
 }
@@ -146,23 +147,24 @@ int get_sys_serial_num()
 
 int get_sys_wifi_num()
 {
+    
     cJSON *item;int wifi_num = 0;
     if(!json_file) {
         json_file = json_file_load(CASE_FUNC_CONFIG);
         if (!json_file)
             return -1;
     }
-   
+
     cJSON *object=cJSON_Parse(json_file);
     if (!object) {
         printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
         return -1;
     }
-
+   
     item=cJSON_GetObjectItem(object,"wifi_num");
-
+    
     if(item != NULL) {
-        printf("%s\n",item->valuestring);
+        //printf("%s\n",item->valuestring);
         wifi_num = item->valueint;
     }
     cJSON_Delete(object);
@@ -184,15 +186,14 @@ int get_sys_usb_sensor_num()
         return -1;
     }
   
-    item=cJSON_GetObjectItem(object,"usb_sensor_num");
-    printf("%s\n",item->valuestring);
-    printf("----------1------------\n");
+    item = cJSON_GetObjectItem(object,"usb_sensor_num");
+    
 
     if(item != NULL) {
-        printf("%s\n",item->valuestring);
+        
         usb_sensor_num = item->valueint;
     }
-    printf("-----------2-----------\n");
+
     cJSON_Delete(object);
     return usb_sensor_num;
 }
@@ -212,7 +213,7 @@ int get_sys_network_protocol()
         return -1;
     }
 
-    item=cJSON_GetObjectItem(object,"serial_num");
+    item=cJSON_GetObjectItem(object,"network_protocol");
 
     if(item != NULL) {
         printf("%s\n",item->valuestring);
@@ -233,3 +234,216 @@ int get_sys_network_protocol()
     return network_protocol_type;
 }
 
+int get_sys_serial_dev_num(int serial_id) 
+{
+    cJSON *serial_sum,*dev_sum;
+    int dev_num = 0;
+    char serial_name[SERIAL_NAME_LENGTH];
+    if(!json_file) {
+        json_file = json_file_load(CASE_FUNC_CONFIG);
+        if (!json_file)
+            return -1;
+    }
+
+    cJSON *object = cJSON_Parse(json_file);
+    if (!object) {
+        printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
+        return -1;
+    }
+    snprintf(serial_name,SERIAL_NAME_LENGTH, "serial-%d",
+		serial_id);
+    serial_sum = cJSON_GetObjectItem(object,serial_name);
+    if(serial_sum != NULL) {
+        dev_sum = cJSON_GetObjectItem(serial_sum,"dev_num");
+        if(dev_sum != NULL) {
+            printf("the dev_num :%d \n",dev_sum->valueint);
+            dev_num = dev_sum->valueint;   
+        }
+    }
+    return dev_num;
+}
+
+int get_sys_dev_info_sensor_num(int serial_id, int dev_id) 
+{
+    cJSON *serial_sum,*dev_sum,*dev,*snesor_sum,*sensor,*sensor_info;
+    int sensor_num = 0;
+    char serial_name[SERIAL_NAME_LENGTH];
+    if(!json_file) {
+        json_file = json_file_load(CASE_FUNC_CONFIG);
+        if (!json_file)
+            return -1;
+    }
+
+    cJSON *object = cJSON_Parse(json_file);
+    if (!object) {
+        printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
+        return -1;
+    }
+    snprintf(serial_name,SERIAL_NAME_LENGTH, "serial-%d",
+		serial_id);
+    serial_sum = cJSON_GetObjectItem(object,serial_name);
+    if(serial_sum != NULL) {
+        dev_sum = cJSON_GetObjectItem(serial_sum,"dev_info");
+        if(dev_sum != NULL) {
+            dev = cJSON_GetArrayItem(dev_sum,dev_id);
+            if(dev != NULL) {
+                snesor_sum = cJSON_GetObjectItem(dev,"sensor_num");  
+                if(snesor_sum != NULL) {
+                    sensor_num = snesor_sum->valueint;
+                }   
+            }
+        }
+    }
+    return sensor_num;
+}
+
+char* get_sys_sensor_info_sensor_name(int serial_id, int dev_id, int sensor_id, char *sensor_name) 
+{
+    cJSON *serial_sum,*dev_sum,*dev,*snesor_sum,*sensor,*sensor_info;
+    int network_protocol_type = 0;
+    char serial_name[SERIAL_NAME_LENGTH];
+    if(!json_file) {
+        json_file = json_file_load(CASE_FUNC_CONFIG);
+        if (!json_file)
+            return -1;
+    }
+
+    cJSON *object = cJSON_Parse(json_file);
+    if (!object) {
+        printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
+        return -1;
+    }
+    snprintf(serial_name,SERIAL_NAME_LENGTH, "serial-%d",
+		serial_id);
+    serial_sum = cJSON_GetObjectItem(object,serial_name);
+    if(serial_sum != NULL) {
+        dev_sum = cJSON_GetObjectItem(serial_sum,"dev_info");
+        if(dev_sum != NULL) {
+            dev = cJSON_GetArrayItem(dev_sum,dev_id);
+            if(dev != NULL) {
+                snesor_sum = cJSON_GetObjectItem(dev,"sensor_info");  
+                if(snesor_sum != NULL) {
+                    sensor = cJSON_GetArrayItem(snesor_sum,sensor_id);
+                    if(sensor != NULL) {
+                        sensor_info = cJSON_GetObjectItem(sensor,"sensor_name"); 
+                        strcpy(sensor_name,sensor_info->valuestring);
+                    }
+                }   
+            }
+        }
+    }
+    return sensor_name;
+}
+
+int get_sys_sensor_info_sensor_type(int serial_id, int dev_id, int sensor_id) 
+{
+    cJSON *serial_sum,*dev_sum,*dev,*snesor_sum,*sensor,*sensor_info;
+    int sensor_type = 0;
+    char serial_name[SERIAL_NAME_LENGTH];
+    if(!json_file) {
+        json_file = json_file_load(CASE_FUNC_CONFIG);
+        if (!json_file)
+            return -1;
+    }
+
+    cJSON *object = cJSON_Parse(json_file);
+    if (!object) {
+        printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
+        return -1;
+    }
+    snprintf(serial_name,SERIAL_NAME_LENGTH, "serial-%d",
+		serial_id);
+    serial_sum = cJSON_GetObjectItem(object,serial_name);
+    if(serial_sum != NULL) {
+        dev_sum = cJSON_GetObjectItem(serial_sum,"dev_info");
+        if(dev_sum != NULL) {
+            dev = cJSON_GetArrayItem(dev_sum,dev_id);
+            if(dev != NULL) {
+                snesor_sum = cJSON_GetObjectItem(dev,"sensor_info");  
+                if(snesor_sum != NULL) {
+                    sensor = cJSON_GetArrayItem(snesor_sum,sensor_id);
+                    if(sensor != NULL) {
+                        sensor_info = cJSON_GetObjectItem(sensor,"sensor_type"); 
+                        sensor_type = sensor_info->valueint;
+                    }
+                }   
+            }
+        }
+    }
+    return sensor_type;
+}
+
+char* get_sys_sensor_info_sensor_gather_cmd(int serial_id, int dev_id, int sensor_id, char *gather_cmd) 
+{
+    cJSON *serial_sum,*dev_sum,*dev,*snesor_sum,*sensor,*sensor_info;
+    char serial_name[SERIAL_NAME_LENGTH];
+    if(!json_file) {
+        json_file = json_file_load(CASE_FUNC_CONFIG);
+        if (!json_file)
+            return -1;
+    }
+
+    cJSON *object = cJSON_Parse(json_file);
+    if (!object) {
+        printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
+        return -1;
+    }
+    snprintf(serial_name,SERIAL_NAME_LENGTH, "serial-%d",
+		serial_id);
+    serial_sum = cJSON_GetObjectItem(object,serial_name);
+    if(serial_sum != NULL) {
+        dev_sum = cJSON_GetObjectItem(serial_sum,"dev_info");
+        if(dev_sum != NULL) {
+            dev = cJSON_GetArrayItem(dev_sum,dev_id);
+            if(dev != NULL) {
+                snesor_sum = cJSON_GetObjectItem(dev,"sensor_info");  
+                if(snesor_sum != NULL) {
+                    sensor = cJSON_GetArrayItem(snesor_sum,sensor_id);
+                    if(sensor != NULL) {
+                        sensor_info = cJSON_GetObjectItem(sensor,"gather_cmd"); 
+                        strcpy(gather_cmd,sensor_info->valuestring);
+                    }
+                }   
+            }
+        }
+    }
+    return gather_cmd;
+}
+
+int get_sys_sensor_info_sensor_gather_freq(int serial_id, int dev_id, int sensor_id) 
+{
+    cJSON *serial_sum,*dev_sum,*dev,*snesor_sum,*sensor,*sensor_info;
+    char serial_name[SERIAL_NAME_LENGTH];
+    int gather_freq = 0;
+    if(!json_file) {
+        json_file = json_file_load(CASE_FUNC_CONFIG);
+        if (!json_file)
+            return -1;
+    }
+
+    cJSON *object = cJSON_Parse(json_file);
+    if (!object) {
+        printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
+        return -1;
+    }
+    snprintf(serial_name,SERIAL_NAME_LENGTH, "serial-%d",
+		serial_id);
+    serial_sum = cJSON_GetObjectItem(object,serial_name);
+    if(serial_sum != NULL) {
+        dev_sum = cJSON_GetObjectItem(serial_sum,"dev_info");
+        if(dev_sum != NULL) {
+            dev = cJSON_GetArrayItem(dev_sum,dev_id);
+            if(dev != NULL) {
+                snesor_sum = cJSON_GetObjectItem(dev,"sensor_info");  
+                if(snesor_sum != NULL) {
+                    sensor = cJSON_GetArrayItem(snesor_sum,sensor_id);
+                    if(sensor != NULL) {
+                        sensor_info = cJSON_GetObjectItem(sensor,"gather_freq"); 
+                        gather_freq = sensor_info->valueint;
+                    }
+                }   
+            }
+        }
+    }
+    return gather_freq;
+}
