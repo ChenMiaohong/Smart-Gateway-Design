@@ -6,6 +6,7 @@
 
 
 typedef struct serial_controller {
+    dev_controller_t *dev_control;
     char serial_name[NAME_MAX_LENGTH];
     int serial_id;
     int dev_num;
@@ -13,6 +14,7 @@ typedef struct serial_controller {
 } serial_controller_t;
 
 typedef struct dev_controller {
+    sensor_controller_t *sensor_control;
     char dev_name[NAME_MAX_LENGTH];
     int dev_id;
     int sensor_num;
@@ -25,5 +27,6 @@ typedef struct sensor_controller {
     char gather_cmd[NAME_MAX_LENGTH];
     int gather_freq;
 } sensor_controller_t;
+
 
 typedef struct 
