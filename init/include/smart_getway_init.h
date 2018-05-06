@@ -29,4 +29,9 @@ typedef struct sensor_controller {
 } sensor_controller_t;
 
 
-typedef struct 
+serial_controller_t* fill_serial_controller(int serial_id);
+int  fill_dev_controller(int serial_id, int dev_id , dev_controller_t* dev_control);
+int fill_sensor_controller(int serial_id, int dev_id, int sensor_id, 
+                                            sensor_controller_t* sensor_control);
+
+#endif

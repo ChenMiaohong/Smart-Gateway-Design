@@ -41,6 +41,8 @@
  char* get_sys_sensor_info_sensor_name(int serial_id, int dev_id, int sensor_id, char *sensor_name);
  char* get_sys_sensor_info_sensor_gather_cmd(int serial_id, int dev_id, int sensor_id, char *gather_cmd);
  char* json_file_load(const char *filename);
+int get_sys_sensor_info_sensor_type(int serial_id, int dev_id, int sensor_id);
+int get_sys_sensor_info_sensor_gather_freq(int serial_id, int dev_id, int sensor_id);
 
  #endif
  

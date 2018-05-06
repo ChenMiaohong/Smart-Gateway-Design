@@ -6,13 +6,7 @@
     "wifi_num":1,
     "usb_sensor_num":1,
     "network_protocol":"http",
-    "typedef struct serial_controller {
-        dev_controller_t *dev_control;
-        char serial_name[NAME_MAX_LENGTH];
-        int serial_id;
-        int dev_num;
-        int pipe[2];
-    } serial_controller_t;-0":{ "dev_num":2,"dev_info":
+    "serial-0":{ "dev_num":2,"dev_info":
                     [
                         {"dev_id":0,"sensor_num":2,"sensor_info":
                             [

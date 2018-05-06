@@ -6,39 +6,8 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-typedef struct serial_controller {
-    dev_controller_t *dev_control;
-    char serial_name[NAME_MAX_LENGTH];
-    int serial_id;
-    int dev_num;
-    int pipe[2];
-} serial_controller_t;
-typedef struct dev_controller {
-    sensor_controller_t *sensor_control;
-    char dev_name[NAME_MAX_LENGTH];
-    int dev_id;
-    int sensor_num;
-} dev_controller_t;
 
-typedef struct sensor_controller {
-    char sensor_name[NAME_MAX_LENGTH];
-    int serial_id;
-    int sensor_type;
-    char gather_cmd[NAME_MAX_LENGTH];
-    int gather_freq;
-} sensor_controller_t;
- int get_sys_arch();
- int get_sys_network_protocol();
- int get_sys_usb_sensor_num();
- int get_sys_wifi_num();
- int get_sys_serial_num();
- char* get_sys_server_ip(char *ip_str);
- int get_sys_serial_dev_num(int serial_id);
- int get_sys_dev_info_sensor_num(int serial_id, int dev_id);
- char* get_sys_sensor_info_sensor_name(int serial_id, int dev_id, int sensor_id, char *sensor_name);
- char* get_sys_sensor_info_sensor_gather_cmd(int serial_id, int dev_id, int sensor_id, char *gather_cmd);
- char* json_file_load(const char *filename);
-, serial_controller_t* fill_serial_controller(int serial_id)
+serial_controller_t* fill_serial_controller(int serial_id)
 {
     if (serial_id >= get_sys_serial_num()){
         return -1;
@@ -56,4 +25,23 @@ typedef struct sensor_controller {
     snprintf(serial_controller->serial_name,SERIAL_NAME_LENGTH, "serial-%d", serial_id);
     return serial_controller;
 }
-int fill_dev_controller(int serial_id, int dev_id ,)
+int  fill_dev_controller(int serial_id, int dev_id , dev_controller_t* dev_control)
+{
+    
+    int sensor_num = get_sys_dev_info_sensor_num(serial_id, dev_id);
+    dev_control->sensor_control = (sensor_controller_t*)malloc(sizeof(sensor_controller_t)*sensor_num);
+    dev_control->dev_id = dev_id;
+    return 0;
+}
+
+int fill_sensor_controller(int serial_id, int dev_id, int sensor_id, 
+                                            sensor_controller_t* sensor_control) {
+    
+    sensor_control->sensor_num = get_sys_dev_info_sensor_num(serial_id, dev_id);
+    sensor_control->sensor_id = sensor_id;
+    sensor_control->sensor_type = get_sys_sensor_info_sensor_type(serial_id, dev_id, sensor_id);
+    get_sys_sensor_info_sensor_name(serial_id, dev_id, sensor_id,sensor_control->sensor_name);
+    get_sys_sensor_info_sensor_gather_cmd(serial_id, dev_id, sensor_id,sensor_control->gather_cmd);
+    sensor_control->gather_freq = get_sys_sensor_info_sensor_gather_freq(serial_id, dev_id, sensor_id);      
+    return 0;
+}

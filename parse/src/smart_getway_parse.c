@@ -410,6 +410,7 @@ char* get_sys_sensor_info_sensor_gather_cmd(int serial_id, int dev_id, int senso
     return gather_cmd;
 }
 
+
 int get_sys_sensor_info_sensor_gather_freq(int serial_id, int dev_id, int sensor_id) 
 {
     cJSON *serial_sum,*dev_sum,*dev,*snesor_sum,*sensor,*sensor_info;
