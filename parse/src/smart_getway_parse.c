@@ -138,7 +138,6 @@ int get_sys_serial_num()
     item=cJSON_GetObjectItem(object,"serial_num");
 
     if(item != NULL) {
-        printf("%s\n",item->valuestring);
         serial_num = item->valueint;
     }
     cJSON_Delete(object);
@@ -256,8 +255,7 @@ int get_sys_serial_dev_num(int serial_id)
     if(serial_sum != NULL) {
         dev_sum = cJSON_GetObjectItem(serial_sum,"dev_num");
         if(dev_sum != NULL) {
-            printf("the dev_num :%d \n",dev_sum->valueint);
-            dev_num = dev_sum->valueint;   
+            dev_num = dev_sum->valueint;
         }
     }
     return dev_num;
