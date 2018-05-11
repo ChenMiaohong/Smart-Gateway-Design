@@ -40,16 +40,28 @@ int sys_init() {
     }
     return 0;
 }
-static int do_dev_task(serial_id)
+void sensor_deal(void* param)
 {
-    
+    alloc_msg_t 
+    send_to_serial
+
+
 
 }
-static int do_serial_task()
+static finish_dev_pthread_task()
 {
-    int serial_num = get_sys_serial_num();
-    int serial_id = 0;
-    for(serial_id = 0; serial_id < serial_num; serial_id++) {
+    int status = -1;
+    pthread_t  ntid;
+    npip = pthread_create(&ntid, NULL, sensor_deal, NULL);
+    return 0;
+}
+static int do_dev_task(serial_id)
+{
+    int status = -1;
+    int dev_num = get_sys_serial_dev_num(serial_id);
+    int dev_id = 0;
+
+    for(dev_id = 0; dev_id < dev_num; dev_id++) {
         status= fork();
         if(status == 0 || status == -1) {
             break;
@@ -62,19 +74,52 @@ static int do_serial_task()
     } else {
         printf("the parent\n");
     }
-
+    while(1) {
+        printf("do_dev_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        sleep(5);
+    }
+    return 0;
+}
+static int do_serial_task()
+{
+    int serial_num = get_sys_serial_num();
+    int serial_id = 0;
+    int status = -1;
+   for(serial_id = 0; serial_id < serial_num; serial_id++) {
+        status= fork();
+        if(status == 0 || status == -1) {
+            break;
+        } 
+    }
+    if(status == -1) {
+      printf("the process fork fail \n");
+    } else if(status == 0) {
+        do_dev_task(serial_id);
+    } else {
+        printf("the parent\n");
+    }
+   
+    while(1){
+        printf("do_serial_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        sleep(5);
+    }
 
     return 0;
 }
 static int do_wifi_task()
 {
-
-
+    while(1){
+        printf("do_wifi_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        sleep(5);
+    }
     return 0;
 }
 static int do_usb_task()
 {
-
+    while(1){
+        printf("do_usb_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        sleep(5);
+    }
 
     return 0;
 }
@@ -139,5 +184,8 @@ int main()
   
     sys_init();
     create_child_process();
+    while(1) {
+        sleep(100);
+    }
     return 0;
 }
