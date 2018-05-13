@@ -16,6 +16,7 @@ add_subdirectory(log)
 add_subdirectory(validation)
 add_subdirectory(parse)
 add_subdirectory(init)
+add_subdirectory(forward)
 add_subdirectory(core)
 
 

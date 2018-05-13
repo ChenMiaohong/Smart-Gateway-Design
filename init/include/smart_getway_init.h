@@ -1,9 +1,27 @@
 #ifndef __SMART_GETWAY_INIT_H
 #define __SMART_GETWAY_INIT_H
+
 #include <stdint.h>
 
 #define NAME_MAX_LENGTH 16
 
+typedef struct msg_head {
+    uint8_t length;
+    uint8_t serial_id;
+    uint8_t dev_id;
+    uint8_t sensor_id;
+    uint8_t resp;
+    uint8_t type;
+    uint8_t addr;
+} msg_head_t;
+
+typedef struct serial_ms_msg {
+    uint16_t start;
+    msg_head_t header;
+    uint8_t data[0];
+    uint64_t timestamp;
+    uint32_t crc32;
+} serial_ms_msg_t;
 
 typedef struct sensor_controller {
     char sensor_name[NAME_MAX_LENGTH];

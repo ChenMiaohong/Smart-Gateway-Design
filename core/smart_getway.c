@@ -5,12 +5,14 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <pthread.h>
 #include "zlog.h"
 #include "smart_getway_log.h"
 #include "smart_getway_parse.h"
 #include "smart_getway_init.h"
 
 case_controller_t* case_controller = NULL;
+pthread_mutex_t queue_lock = PTHREAD_MUTEX_INITIALIZER;
 
 /*
 test_module_list:
@@ -24,7 +26,7 @@ int sys_init() {
     int dev_id = 0;
     int sensor_id = 0;
     case_controller = fill_case_controller();
-     printf("----=----\n");
+    printf("----=----\n");
     for(serial_id = 0; serial_id < get_sys_serial_num(); serial_id++) {
         printf("--serial_id:%d,serial_num = %d---\n",serial_id, get_sys_serial_num());
         fill_serial_controller(serial_id, (case_controller->serial_control + serial_id));
@@ -42,8 +44,10 @@ int sys_init() {
 }
 void sensor_deal(void* param)
 {
-    alloc_msg_t 
-    send_to_serial
+   while(1) {
+
+
+   }
 
 
 
@@ -52,10 +56,10 @@ static finish_dev_pthread_task()
 {
     int status = -1;
     pthread_t  ntid;
-    npip = pthread_create(&ntid, NULL, sensor_deal, NULL);
+    ntid = pthread_create(&ntid, NULL, sensor_deal, NULL);
     return 0;
 }
-static int do_dev_task(serial_id)
+static int do_dev_task(int serial_id)
 {
     int status = -1;
     int dev_num = get_sys_serial_dev_num(serial_id);
