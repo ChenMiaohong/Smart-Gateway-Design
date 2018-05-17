@@ -9,7 +9,7 @@
 
 #define CASE_FUNC_CONFIG "/etc/smart_getway/smart_getway_config.json"
 #define PTHREAD_NAME_LENGTH 32
-static char *json_file = NULL;
+char *json_file = NULL;
 char* json_file_load(const char *filename)
 {
     FILE *fp = NULL;

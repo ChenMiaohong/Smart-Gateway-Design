@@ -21,6 +21,8 @@ typedef struct serial_ms_msg {
     uint32_t crc32;
 } serial_ms_msg_t;
 */
+#define MAXLINE 1024
+
 #ifdef __cplusplus
 }
 #endif

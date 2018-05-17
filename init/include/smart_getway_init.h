@@ -47,7 +47,9 @@ typedef struct serial_controller {
 } serial_controller_t;
 
 typedef struct case_controller {
-    serial_controller_t* serial_control;  
+    int serial_num;
+    serial_controller_t* serial_control;
+
 }case_controller_t;
 
 int fill_serial_controller(int serial_id, serial_controller_t* serial_controller);
