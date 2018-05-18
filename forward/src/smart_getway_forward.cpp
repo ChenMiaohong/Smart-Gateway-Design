@@ -1,4 +1,5 @@
 #include<iostream>
+#include <vector>
 #include<queue>
 #include <string.h>
 #include <stdio.h>
@@ -7,6 +8,7 @@
 using namespace std;
 
 queue<serial_ms_msg_t> send_queue;
+vector<queue<sensor_controller_t> >g_queue;
 extern pthread_mutex_t queue_lock;
 int add_send_queue(serial_ms_msg_t* serial_sensor_data)
 {
@@ -18,7 +20,7 @@ int add_send_queue(serial_ms_msg_t* serial_sensor_data)
 }
 int send_to_serial()
 {
-
+    g_queue.resize(7);
 
 
 }

@@ -147,6 +147,7 @@ char * get_sensor_data(int fd) {
     }
     return NULL;
 }
+
 static int do_dev_task(int serial_id)
 {
     int status = -1;
