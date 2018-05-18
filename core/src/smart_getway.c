@@ -12,9 +12,11 @@
 #include <sys/socket.h>  
 #include <netinet/in.h>  
 #include <arpa/inet.h>  
+#include <termios.h> 
 #include "zlog.h"
 #include "s2j.h"
 #include "smart_getway.h"
+#include "smart_getway_validation.h"
 #include "smart_getway_log.h"
 #include "smart_getway_parse.h"
 #include "smart_getway_init.h"
@@ -112,19 +114,34 @@ int uart_recv(int fd, char *data, int datalen)
     }
     return 0;
 }
+alloc_msg()
+{
 
+
+
+}
 char * get_sensor_data(int fd) {
 
     int serial_id = 0;
     int dev_id = 0;
     int sensor_id = 0;
     printf("get_sensor_data\n");
-    int fd = serial_init();
+    int s_fd = serial_init();
     for(serial_id = 0; serial_id < case_controller->serial_num; serial_id++) {
         for(dev_id = 0; dev_id < (case_controller->serial_control + serial_id)->dev_num; dev_id++) {
             for(sensor_id = 0; sensor_id < ((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_num ; sensor_id++) {
-                printf("sensor_name:%s\n",((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->sensor_name));
-
+                int datalen = strlen(((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
+                printf("sensor_name:%d,%s\n",datalen, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
+                serial_ms_msg_t* msg = (serial_ms_msg_t*)malloc(sizeof(serial_ms_msg_t)+datalen);
+                msg->header.length = datalen;
+                msg->header.serial_id = serial_id;
+                msg->header.dev_id = dev_id;
+                msg->header.sensor_id = sensor_id;
+                memcpy(msg->data, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd), msg->header.length);
+                msg->crc32 = CRC32_Table(msg->data,strlen((char *)msg->data),msg->crc32);
+                get_sys_cur_time(msg->timestamp);
+                //uart_send(fd, (char*)msg, sizeof(serial_ms_msg_t)+datalen);
+                free(msg);
             }
         }
     }

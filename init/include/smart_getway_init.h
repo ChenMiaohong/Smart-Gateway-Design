@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define NAME_MAX_LENGTH 16
+#define MAX_TIME_LEN 64
 
 typedef struct msg_head {
     uint8_t length;
@@ -19,7 +20,7 @@ typedef struct serial_ms_msg {
     uint16_t start;
     msg_head_t header;
     uint8_t data[0];
-    uint64_t timestamp;
+    char timestamp[MAX_TIME_LEN];
     uint32_t crc32;
 } serial_ms_msg_t;
 
@@ -57,4 +58,5 @@ int fill_dev_controller(int serial_id, int dev_id , dev_controller_t* dev_contro
 int fill_sensor_controller(int serial_id, int dev_id, int sensor_id, 
                                             sensor_controller_t* sensor_control);
 case_controller_t* fill_case_controller();
+int get_sys_cur_time(char* time_cur);
 #endif

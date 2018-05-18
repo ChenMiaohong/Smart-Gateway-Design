@@ -4,9 +4,16 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
+#include <sys/types.h>  
+#include <sys/stat.h>   
+#include <termios.h>    /*PPSIX 终端控制定义*/
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+
 #include "smart_getway_init.h"
 #include "smart_getway_parse.h"
+
 
 case_controller_t* fill_case_controller() 
 {
@@ -25,7 +32,7 @@ case_controller_t* fill_case_controller()
 int  fill_serial_controller(int serial_id, serial_controller_t* serial_controller)
 {
     printf("_____fill_serial_controller0,%d\n",get_sys_serial_num());
-    if (serial_id >= get_sys_serial_num()){
+    if (serial_id >= get_sys_serial_num()) {
         return -1;
     }
     printf("_____fill_serial_controller1\n");
@@ -173,4 +180,12 @@ int serial_init()
         return;
     }
     return fd;
+}
+int get_sys_cur_time(char* time_cur)
+{
+    time_t now;
+    struct tm* tmlocal;
+    tmlocal = localtime(&now);
+    memcpy(time_cur, asctime, strlen(asctime(tmlocal)));
+    return 0;
 }

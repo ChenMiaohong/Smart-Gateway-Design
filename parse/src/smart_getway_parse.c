@@ -101,13 +101,13 @@ char* get_sys_server_ip(char *ip_str)
     if(!json_file) {
         json_file = json_file_load(CASE_FUNC_CONFIG);
         if (!json_file)
-            return -1;
+            return NULL;
     }
    
     cJSON *object=cJSON_Parse(json_file);
     if (!object) {
         printf("get_inst_num Error before: [%s]\n",cJSON_GetErrorPtr());
-        return -1;
+        return NULL;
     }
 
     item=cJSON_GetObjectItem(object,"server_ip");
