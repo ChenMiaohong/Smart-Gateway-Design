@@ -10,15 +10,15 @@
                     [
                         {"dev_id":0,"sensor_num":2,"sensor_info":
                             [
-                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"A","gather_freq":1},
-                                {"sensor_id":1,"sensor_name":"moisture","sensor_type":1,"gather_cmd":"A","gather_freq":1}
+                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1},
+                                {"sensor_id":1,"sensor_name":"moisture","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
                             ]
                         },
                         {
                             "dev_id":1,"sensor_num":2,"sensor_info":
                             [
-                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"A","gather_freq":1},
-                                {"sensor_id":1,"sensor_name":"moisture","sensor_type":1,"gather_cmd":"A","gather_freq":1}
+                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1},
+                                {"sensor_id":1,"sensor_name":"moisture","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
 
                             ]
                         }
@@ -28,16 +28,16 @@
                     [
                         {"dev_id":0,"sensor_num":2,"sensor_info":
                             [
-                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"A","gather_freq":1},
-                                {"sensor_id":1,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"A","gather_freq":1}
+                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1},
+                                {"sensor_id":1,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
 
                             ]
                         },
                         {
                             "dev_id":1,"sensor_num":2,"sensor_info":
                             [
-                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"A","gather_freq":1},
-                                {"sensor_id":1,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"A","gather_freq":1}
+                                {"sensor_id":0,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1},
+                                {"sensor_id":1,"sensor_name":"temperature","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
 
                             ]
                         }
@@ -47,14 +47,14 @@
                 [
                     {"dev_id":0,"sensor_num":1,"sensor_info":
                         [
-                            {"sensor_id":0,"sensor_name":"wind_speed","sensor_type":1,"gather_cmd":"A","gather_freq":1}
+                            {"sensor_id":0,"sensor_name":"wind_speed","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
 
                         ]
                     },
                     {
                         "dev_id":0,"sensor_num":1,"sensor_info":
                         [
-                            {"sensor_id":1,"sensor_name":"wind_direction","sensor_type":1,"gather_cmd":"A","gather_freq":1}
+                            {"sensor_id":1,"sensor_name":"wind_direction","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
 
                         ]
                     }
@@ -64,7 +64,7 @@
                 [
                         {"dev_id":0,"sensor_num":1,"sensor_info":
                             [
-                                {"sensor_id":0,"sensor_name":"camera","sensor_type":1,"gather_cmd":"","gather_freq":1}
+                                {"sensor_id":0,"sensor_name":"camera","sensor_type":1,"gather_cmd":"AAAA","gather_freq":1}
 
                             ]
                         }

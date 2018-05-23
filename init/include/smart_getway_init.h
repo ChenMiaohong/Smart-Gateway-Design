@@ -6,7 +6,7 @@
 #define NAME_MAX_LENGTH 16
 #define MAX_TIME_LEN 64
 
-typedef struct msg_head {
+/*typedef struct msg_head {
     uint8_t length;
     uint8_t serial_id;
     uint8_t dev_id;
@@ -19,10 +19,18 @@ typedef struct msg_head {
 typedef struct serial_ms_msg {
     uint16_t start;
     msg_head_t header;
-    uint8_t data[0];
+    uint8_t data[16];
     char timestamp[MAX_TIME_LEN];
-    uint32_t crc32;
-} serial_ms_msg_t;
+    uint16_t crc32;
+} serial_ms_msg_t;*/
+
+typedef struct serial_ms_msg {
+    uint8_t start;
+    uint8_t type;
+    uint8_t length;
+    uint8_t data[0];
+    //uint8_t end;
+}serial_ms_msg_t;
 
 typedef struct sensor_controller {
     char sensor_name[NAME_MAX_LENGTH];

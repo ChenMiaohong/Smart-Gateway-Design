@@ -155,7 +155,7 @@ int serial_init()
 {
     int fd;
     int ret;
-    fd = open( "/dev/ttyS0", O_RDWR|O_NOCTTY|O_NDELAY);
+    fd = open( "/dev/ttyUSB0", O_RDWR|O_NOCTTY|O_NDELAY);
     if (fd == -1) {
         perror("Can't Open Serial Port\n");
         return(-1);

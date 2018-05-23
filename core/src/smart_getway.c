@@ -16,6 +16,7 @@
 #include "zlog.h"
 #include "s2j.h"
 #include "smart_getway.h"
+#include "smart_getway_forward.h"
 #include "smart_getway_validation.h"
 #include "smart_getway_log.h"
 #include "smart_getway_parse.h"
@@ -24,6 +25,7 @@
 case_controller_t* case_controller = NULL;
 char *json_file = NULL;
 pthread_mutex_t queue_lock = PTHREAD_MUTEX_INITIALIZER;
+
 
 /*
 test_module_list:
@@ -78,7 +80,12 @@ static finish_dev_pthread_task()
 int uart_send(int fd, char *data, int datalen)  
 {  
     int len = 0;  
-    len = write(fd, data, datalen);//实际写入的长度  
+    int i;
+    len = write(fd, data, datalen);//实际写入的长度 ; 
+    for(i = 0; i < datalen; i++) {
+        printf("i = %d, data = %x\n", i, data[i]);
+    }
+    printf("len:%d,datalen=%d\n", len, datalen); 
     if(len == datalen) {  
         return len;  
     } else {  
@@ -114,13 +121,8 @@ int uart_recv(int fd, char *data, int datalen)
     }
     return 0;
 }
-alloc_msg()
-{
 
-
-
-}
-char * get_sensor_data(int fd) {
+/*char * get_sensor_data(int fd) {
 
     int serial_id = 0;
     int dev_id = 0;
@@ -132,22 +134,65 @@ char * get_sensor_data(int fd) {
             for(sensor_id = 0; sensor_id < ((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_num ; sensor_id++) {
                 int datalen = strlen(((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
                 printf("sensor_name:%d,%s\n",datalen, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
-                serial_ms_msg_t* msg = (serial_ms_msg_t*)malloc(sizeof(serial_ms_msg_t)+datalen);
-                msg->header.length = datalen;
-                msg->header.serial_id = serial_id;
-                msg->header.dev_id = dev_id;
-                msg->header.sensor_id = sensor_id;
-                memcpy(msg->data, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd), msg->header.length);
-                msg->crc32 = CRC32_Table(msg->data,strlen((char *)msg->data),msg->crc32);
-                get_sys_cur_time(msg->timestamp);
-                //uart_send(fd, (char*)msg, sizeof(serial_ms_msg_t)+datalen);
-                free(msg);
+                serial_ms_msg_t msg;
+                serial_ms_msg_t msg1;
+                msg.header.length = datalen;
+                msg.header.serial_id = serial_id;
+                msg.header.dev_id = dev_id;
+                msg.header.sensor_id = sensor_id;
+                memcpy(msg.data, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd), msg.header.length);
+                msg.crc32 = CRC32_Table(msg.data, strlen((char *)msg.data), msg.crc32);
+                get_sys_cur_time(msg.timestamp);
+                printf("struct size:%d\n",sizeof(serial_ms_msg_t));
+                uart_send(s_fd, (char*)&msg, sizeof(serial_ms_msg_t));
+               
+                del_send_queue(&msg1);
+                printf("%d,%d,%d,%d\n", msg1.header.length, msg1.header.serial_id, msg1.header.dev_id, msg1.header.sensor_id);
+                printf("after size: %d \n", size_send_queue());
+                //uart_recv(fd, (char*)msg, datalen)
             }
         }
     }
+    close(s_fd);
+    return NULL;
+}*/
+
+char * get_sensor_data(int fd) {
+
+    int serial_id = 0;
+    int dev_id = 0;
+    int sensor_id = 0;
+    printf("get_sensor_data\n");
+   
+    for(serial_id = 0; serial_id < case_controller->serial_num; serial_id++) {
+        for(dev_id = 0; dev_id < (case_controller->serial_control + serial_id)->dev_num; dev_id++) {
+            for(sensor_id = 0; sensor_id < ((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_num ; sensor_id++) {
+                int datalen = strlen(((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
+                printf("sensor_name:%d,%s\n",datalen, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
+                serial_ms_msg_t *msg = (serial_ms_msg_t *)malloc(sizeof(serial_ms_msg_t)+datalen);
+                serial_ms_msg_t msg1;
+                msg->start = 0x55;
+                msg->type = 0x10;
+                msg->length = datalen;
+                memcpy(msg->data, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd), msg->length);
+                //msg->end = 0x60;
+                //msg.crc32 = CRC32_Table(msg.data, strlen((char *)msg.data), msg.crc32);
+                //get_sys_cur_time(msg.timestamp);
+                printf("struct size:%d\n",sizeof(serial_ms_msg_t)+datalen);
+                int s_fd = serial_init();
+                //uart_send(s_fd, (uint8_t*)msg, sizeof(serial_ms_msg_t)+datalen);
+                uart_send(s_fd, "A", 1);
+                close(s_fd);
+                //del_send_queue(&msg1);
+                //printf("%d,%d,%d,%d\n", msg1.header.length, msg1.header.serial_id, msg1.header.dev_id, msg1.header.sensor_id);
+                printf("after size: %d \n", size_send_queue());
+                //uart_recv(fd, (char*)msg, datalen)
+            }
+        }
+    }
+   
     return NULL;
 }
-
 static int do_dev_task(int serial_id)
 {
     int status = -1;
@@ -185,6 +230,10 @@ void* read_func(void* param) {
         n = recv(client_sockfd, readbuff, MAXLINE, 0);  /*recv 在这里是阻塞运行*/  
         if(n > 0)  
         {  
+            serial_ms_msg_t msg;
+            memcpy(&msg, readbuff, sizeof(serial_ms_msg_t));
+            add_send_queue(msg);
+            printf("before size: %d \n", size_send_queue());
             printf("server recv data: %s \n",readbuff);  
         }  
     }
@@ -228,9 +277,9 @@ static int do_serial_task()
     addrlen = sizeof(struct sockaddr_in);  
     memset(&server_addr, 0, addrlen);  
     server_addr.sin_family = AF_INET;    /*AF_INET表示 IPv4 Intern 协议*/  
-    //server_addr.sin_addr.s_addr = inet_addr("120.77.46.12");
-    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server_addr.sin_port = htons(8080); /*设置端口*/  
+    server_addr.sin_addr.s_addr = inet_addr("120.77.46.12");
+    //server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    server_addr.sin_port = htons(8000); /*设置端口*/  
       
     /*绑定地址结构到套接字描述符*/  
     if(connect(client_sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) == -1) { 
@@ -245,7 +294,7 @@ static int do_serial_task()
     }
     //signal(SIGINT,stop); /*注册SIGINT 信号*/
     while(1){
-        printf("do_serial_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        //printf("do_serial_task:pid = %d, parent pid = %d\n", getpid(), getppid());
         sleep(5);
     }
 
@@ -254,7 +303,7 @@ static int do_serial_task()
 static int do_wifi_task()
 {
     while(1){
-        printf("do_wifi_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        //printf("do_wifi_task:pid = %d, parent pid = %d\n", getpid(), getppid());
         sleep(5);
     }
     return 0;
@@ -262,7 +311,7 @@ static int do_wifi_task()
 static int do_usb_task()
 {
     while(1){
-        printf("do_usb_task:pid = %d, parent pid = %d\n", getpid(), getppid());
+        //printf("do_usb_task:pid = %d, parent pid = %d\n", getpid(), getppid());
         sleep(5);
     }
 
@@ -292,11 +341,11 @@ int create_child_process()
         }
         if(i == 3) {
             do_usb_task();
-            printf("the i = 3\n");
+            //printf("the i = 3\n");
         }
   } else {
       while(1) {
-        printf("the parent,%d\n",getpid());
+        //printf("the parent,%d\n",getpid());
         sleep(3);
     }
      

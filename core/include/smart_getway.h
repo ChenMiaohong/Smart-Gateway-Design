@@ -1,5 +1,6 @@
 #ifndef __SMART_GETWAY_H
 #define __SMART_GETWAY_H
+#include "smart_getway_init.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,7 +23,9 @@ typedef struct serial_ms_msg {
 } serial_ms_msg_t;
 */
 #define MAXLINE 1024
-
+extern int add_send_queue(serial_ms_msg_t serial_sensor_data);
+extern int size_send_queue();
+extern int del_send_queue(serial_ms_msg_t* serial_sensor_data);
 #ifdef __cplusplus
 }
 #endif

@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_library(${PROJECT_NAME} SHARED src/smart_getway_forward.cpp)
 
-target_link_libraries(${PROJECT_NAME} pthread smart_getway_init)
+target_link_libraries(${PROJECT_NAME} stdc++ pthread smart_getway_init)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 
