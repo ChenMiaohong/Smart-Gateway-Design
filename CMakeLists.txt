@@ -14,6 +14,7 @@ set(CMAKE_INSTALL_SRC_PREFIX "${CMAKE_INSTALL_PREFIX}/sample")
 
 add_subdirectory(log)
 add_subdirectory(struct2json)
+add_subdirectory(base64)
 add_subdirectory(validation)
 add_subdirectory(parse)
 add_subdirectory(init)

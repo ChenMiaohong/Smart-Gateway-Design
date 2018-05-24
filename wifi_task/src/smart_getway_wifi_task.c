@@ -15,8 +15,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "smart_getway_init.h"
 
-
+extern merge_smart_getway_data_t* smart_getway_data;
 void* do_wifi_task(void* param)
 {
 

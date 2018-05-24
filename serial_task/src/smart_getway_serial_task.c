@@ -17,6 +17,7 @@
 #include "smart_getway_parse.h"
 
 extern case_controller_t* case_controller;
+extern merge_smart_getway_data_t* smart_getway_data;
 int uart_send(int fd, uint8_t *data, int datalen)  
 {  
     int len = 0;  
@@ -71,9 +72,11 @@ void* do_serial_task(void* param)
     printf("get_sensor_data\n");
     while(1) {
         int s_fd = serial_init();
+        int sensor_count = 0;
         for(serial_id = 0; serial_id < case_controller->serial_num; serial_id++) {
             for(dev_id = 0; dev_id < (case_controller->serial_control + serial_id)->dev_num; dev_id++) {
                 for(sensor_id = 0; sensor_id < ((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_num ; sensor_id++) {
+                    sensor_count++;
                     int datalen = strlen(((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
                     printf("sensor_name:%d,%s\n",datalen, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd));
                     serial_ms_msg_t *msg = (serial_ms_msg_t *)malloc(sizeof(serial_ms_msg_t)+datalen);
@@ -87,8 +90,15 @@ void* do_serial_task(void* param)
                     msg->header.addr = 0x01;
                     memcpy(msg->data, ((((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id)->gather_cmd), datalen);
                     printf("struct size:%d\n",sizeof(serial_ms_msg_t)+datalen);
-                   
                     uart_send(s_fd, (uint8_t*)msg, sizeof(serial_ms_msg_t)+datalen);
+                    printf("-------------%d----------%d------------------------\n",smart_getway_data->sensor_num, sensor_count);
+                    pthread_mutex_lock(&((smart_getway_data->sensor_des + sensor_count)->sensor_lock));
+                    (smart_getway_data->sensor_des + sensor_count)->serial_id = msg->header.serial_id;
+                    (smart_getway_data->sensor_des + sensor_count)->dev_id = msg->header.serial_id;
+                    (smart_getway_data->sensor_des + sensor_count)->sensor_id = msg->header.serial_id;
+                    memcpy((smart_getway_data->sensor_des + sensor_count)->data, "123456", 6);
+                    pthread_mutex_unlock(&((smart_getway_data->sensor_des + sensor_count)->sensor_lock));
+                    printf("++++++++++++++++++++++++%d+++++++++++++++++++++++\n",sensor_count);
                 }
             }
         }

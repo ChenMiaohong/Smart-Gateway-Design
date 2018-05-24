@@ -22,6 +22,7 @@
 using namespace cv;
 using namespace std;
 
+extern merge_smart_getway_data_t* smart_getway_data;
 
 int get_usb_cam(int usb_id, usb_cam_data_t* cam_data) 
 {
@@ -30,33 +31,52 @@ int get_usb_cam(int usb_id, usb_cam_data_t* cam_data)
     capture>>image;
     vector<uchar> data_encode;
     imencode(".jpg", image, data_encode);
+
     int len_encode = data_encode.size();
     string len = to_string(len_encode);
     int length = len.length();
     for (int i = 0; i < 16 - length; i++) {
         len = len + " ";
     }
-    //pthread_mutex_lock(&cam_data->cam_lock);
+    pthread_mutex_lock(&cam_data->cam_lock);
     cam_data->length = data_encode.size();
     printf("%d\n",data_encode.size() );
     memcpy(cam_data->str_len, len.c_str(), length);
     cam_data->data = (unsigned char*)malloc(cam_data->length);
     unsigned char* v_ptr = &data_encode[0];
     memcpy(cam_data->data, v_ptr, cam_data->length);
-    //pthread_mutex_unlock(&cam_data->cam_lock);
+    pthread_mutex_unlock(&cam_data->cam_lock);
     return 0;
 }
 
+int str_to_mat(unsigned char* str, int length)
+{
+    namedWindow("server",CV_WINDOW_AUTOSIZE);
+    vector<uchar> data;
+    data.resize(length);
+    for (int i = 0; i < length; i++)
+    {
+        data[i] = str[i];
+    }
+    Mat img_decode;
+    img_decode = imdecode(data, CV_LOAD_IMAGE_COLOR);
+    while(1){
+        imshow("server", img_decode);
+        waitKey(30);
+    }
 
+    return 0;
+
+}
 void* do_usb_task(void* param)
 {
     int usb_id;
     int usb_num = get_sys_usb_sensor_num();
     while(1){
         for(usb_id = 0; usb_id < usb_num; usb_id++) {
-            usb_cam_data_t cam_data;
-            get_usb_cam(usb_id, &cam_data);
-            free(cam_data.data);
+            //usb_cam_data_t cam_data;
+            get_usb_cam(usb_id, (smart_getway_data->cam_des + usb_id));
+            //free(cam_data.data);
 
         }
            

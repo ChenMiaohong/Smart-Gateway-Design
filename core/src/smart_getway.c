@@ -12,26 +12,26 @@
 #include <sys/socket.h>  
 #include <netinet/in.h>  
 #include <arpa/inet.h>  
-#include <termios.h> 
+#include <termios.h>
+#include "base64.h"
 #include "zlog.h"
 #include "s2j.h"
 #include "smart_getway.h"
 #include "smart_getway_validation.h"
 #include "smart_getway_serial_task.h"
-
 #include "smart_getway_wifi_task.h"
 #include "smart_getway_log.h"
 #include "smart_getway_parse.h"
 #include "smart_getway_init.h"
-
-
 #include "smart_getway_usb_cam.h"
 #include "smart_getway_net.h"
+#include "smart_getway_merge.h"
 
 
 char *json_file = NULL;
 pthread_mutex_t queue_lock = PTHREAD_MUTEX_INITIALIZER;
-
+extern int sensor_num ;
+merge_smart_getway_data_t* smart_getway_data;
 
 /*
 test_module_list:
@@ -234,7 +234,21 @@ int create_child_pthread()
 //     }
      
 //   }
+int lock_init()
+{
+    int i;
+    for(i = 0; i < smart_getway_data->sensor_num; i++) {
+        pthread_mutex_init(&((smart_getway_data->sensor_des + i) -> sensor_lock), NULL);
+    }
 
+    for(i = 0; i < smart_getway_data->usb_num; i++) {
+        pthread_mutex_init(&((smart_getway_data->cam_des + i) -> cam_lock), NULL);
+    }
+    for(i = 0; i < smart_getway_data->wifi_num; i++) {
+         pthread_mutex_init(&((smart_getway_data->wifi_des + i) -> wifi_lock), NULL);
+    }
+    return 0;
+}
 int core_init() 
 {
 
@@ -243,6 +257,17 @@ int core_init()
     if (ret) {
 	    printf("dcos init log failed, %d\n", ret);
      }
+    sys_init();
+    smart_getway_data = (merge_smart_getway_data_t*)malloc(sizeof(merge_smart_getway_data_t));
+    smart_getway_data->sensor_num = sensor_num;
+    smart_getway_data->usb_num    = get_sys_usb_sensor_num();
+    smart_getway_data->wifi_num   = get_sys_wifi_num();
+    printf("sensor_num:%d,usb_num:%d,wifi_num:%d\n",smart_getway_data->sensor_num,smart_getway_data->usb_num,
+    smart_getway_data->wifi_num);
+    smart_getway_data->sensor_des = (sensor_data_des_t*)malloc(sizeof(sensor_data_des_t)*(smart_getway_data->sensor_num));
+    smart_getway_data->cam_des    = (usb_cam_data_t*)malloc(sizeof(usb_cam_data_t)*( smart_getway_data->usb_num));
+    smart_getway_data->wifi_des   = (wifi_data_des_t*)malloc(sizeof(wifi_data_des_t)*(smart_getway_data->wifi_num));
+    lock_init();
     char ip_addr[18];
     char sensor_name[32];
     char gather_cmd[8];
@@ -263,26 +288,65 @@ int core_init()
     printf("dev_num:%d \n",get_sys_serial_dev_num(0));
     printf("sensor_num:%d \n",get_sys_dev_info_sensor_num(0,0));
   
-    sys_init();
+   
    
 
     /*serialize Student structure object */
     //cJSON *json_student = struct_to_json(&orignal_student_obj);
     //char *rendered=cJSON_Print(json_student);
-    printf("%s\n", json_file);
-    cJSON *object=cJSON_Parse(json_file);
-    if (!object) {
-        printf("test Error before: [%s]\n",cJSON_GetErrorPtr());
-        return -1;
-    }
-    printf("the main parent,%d\n",getpid());
+    // printf("%s\n", json_file);
+    // cJSON *object=cJSON_Parse(json_file);
+    // if (!object) {
+    //     printf("test Error before: [%s]\n",cJSON_GetErrorPtr());
+    //     return -1;
+    // }
+    // printf("the main parent,%d\n",getpid());
    
     return 0;
 }
 
+// int main()
+// {
+//     //core_init();
+//     //create_child_pthread();
+//     usb_cam_data_t cam_data;
+//     get_usb_cam(0, &cam_data);
+//     unsigned char* src = (unsigned char*)malloc(1024*1024*11);
+//     unsigned char* str = (unsigned char*)malloc(1024*1024*10);
+//     base64_encode(str, (unsigned char*)cam_data.data, cam_data.length, 1024*1024*10);
+//     snprintf(src, 1024*1024*11, "\"usb_cam_data\": [{\"usb_id\": %d,\"length\": %d,\"str_len\": \"%s\",\"data\": \"%s\"}]",
+//      5,20,"cmhcmh",str);
+    
+//     int fd = open("./base_test.txt",O_CREAT|O_RDWR,0666);
+//     if(fd < 0) {
+//         printf("err\n");
+//     }
+//     int n = write(fd, str, strlen(str));
+//     close(fd);
+//     //printf("#src = %s\n#",src);
+//     unsigned char* image = (unsigned char*)malloc(1024*1024*10);
+//     base64_decode(image, str, strlen(str), 1024*1024*10);
+//     printf("base64_encode:size = %d, length = %d, base64_decode:size = %d\n",strlen(str),cam_data.length, strlen(image));
+//     str_to_mat(image, cam_data.length);
+//     return 0;
+// }
 int main()
 {
     core_init();
     create_child_pthread();
+    usb_cam_data_t cam_data;
+    get_usb_cam(0, &cam_data);
+    unsigned char* src = (unsigned char*)malloc(1024*1024*11);
+    unsigned char* str = (unsigned char*)malloc(1024*1024*10);
+    base64_encode(str, (unsigned char*)cam_data.data, cam_data.length, 1024*1024*10);
+    snprintf(src, 1024*1024*11, "\"usb_cam_data\": [{\"usb_id\": %d,\"length\": %d,\"str_len\": \"%s\",\"data\": \"%s\"}]",
+     5,20,"cmhcmh",str);
+   
+   
+    unsigned char* image = (unsigned char*)malloc(1024*1024*10);
+    base64_decode(image, str, strlen(str), 1024*1024*10);
+    printf("base64_encode:size = %d, length = %d, base64_decode:size = %d\n",strlen(str),cam_data.length, strlen(image));
+    str_to_mat(image, cam_data.length);
     return 0;
 }
+

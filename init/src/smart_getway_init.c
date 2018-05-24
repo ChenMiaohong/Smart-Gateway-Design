@@ -15,7 +15,7 @@
 #include "smart_getway_parse.h"
 
 case_controller_t* case_controller = NULL;
-
+int sensor_num = 0;
 case_controller_t* fill_case_controller() 
 {
     case_controller_t* case_controller = (case_controller_t*)malloc(sizeof(case_controller_t));
@@ -88,6 +88,7 @@ int sys_init() {
             for(sensor_id = 0; sensor_id < get_sys_dev_info_sensor_num(serial_id, dev_id) ; sensor_id++) {
                 fill_sensor_controller(serial_id, dev_id, sensor_id, 
                  ((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id);
+                 sensor_num++;
             }
         }
     }

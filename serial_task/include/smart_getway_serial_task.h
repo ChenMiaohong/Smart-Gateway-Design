@@ -2,13 +2,8 @@
 #define SMART_GETWAY_SERIAL_TASK_H
 #include "smart_getway_forward.h"
 
-#define MAX_SENSOR_LENGTH 8
-typedef struct senial_data_des {
-    uint8_t serial_id;
-    uint8_t dev_id;
-    uint8_t sensor_id;
-    char data[MAX_SENSOR_LENGTH];
-} sensor_data_des_t;
+
+
 
 int uart_send(int fd, uint8_t *data, int datalen);
 int uart_recv(int fd, uint8_t* data, int datalen);

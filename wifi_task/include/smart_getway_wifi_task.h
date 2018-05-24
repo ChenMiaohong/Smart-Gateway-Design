@@ -7,11 +7,6 @@
 
 
 
-typedef struct wifi_data_des {
-    uint8_t wifi_id;
-    char data[MAX_SENSOR_LENGTH];
-} wifi_data_des_t;
-
 void* do_wifi_task(void* param);
 
 

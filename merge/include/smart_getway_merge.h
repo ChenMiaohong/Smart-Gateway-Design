@@ -13,14 +13,7 @@ extern "C" {
 
 
 
-typedef struct merge_smart_getway_data {
-    uint8_t sensor_num;
-    sensor_data_des_t* sensor_des;
-    uint8_t usb_num;
-    usb_cam_data_t* cam_des;
-    uint8_t wifi_num;
-    wifi_data_des_t* wifi_des;
-} merge_smart_getway_data_t;
+
 
 
 

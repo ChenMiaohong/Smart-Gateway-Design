@@ -9,6 +9,8 @@ extern "C" {
 #define NAME_MAX_LENGTH 16
 #define MAX_TIME_LEN 64
 #define MAX_CONTROL_LENGTH 8
+#define CAM_DATA_LEN 16
+#define MAX_SENSOR_LENGTH 8
 /*
 typedef struct serial_ms_msg {
     uint16_t start;
@@ -18,6 +20,37 @@ typedef struct serial_ms_msg {
     uint16_t crc32;
 } serial_ms_msg_t;*/
 
+
+typedef struct wifi_data_des {
+    uint8_t wifi_id;
+    char data[MAX_SENSOR_LENGTH];
+    pthread_mutex_t wifi_lock;
+} wifi_data_des_t;
+
+typedef struct sensor_data_des {
+    uint8_t serial_id;
+    uint8_t dev_id;
+    uint8_t sensor_id;
+    char data[MAX_SENSOR_LENGTH];
+    pthread_mutex_t sensor_lock;
+} sensor_data_des_t;
+
+typedef struct usb_cam_data {
+    uint8_t usb_id;
+    int length;
+    char str_len[CAM_DATA_LEN];
+    unsigned char* data;
+    pthread_mutex_t cam_lock;
+} usb_cam_data_t;
+
+typedef struct merge_smart_getway_data {
+    uint8_t sensor_num;
+    sensor_data_des_t* sensor_des;
+    uint8_t usb_num;
+    usb_cam_data_t* cam_des;
+    uint8_t wifi_num;
+    wifi_data_des_t* wifi_des;
+} merge_smart_getway_data_t;
 
 typedef struct msg_head {
     uint8_t start;
