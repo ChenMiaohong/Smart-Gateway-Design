@@ -8,12 +8,12 @@
 extern "C"
 {
 #endif
-    int add_send_queue(serial_ms_msg_t serial_sensor_data);
+    int add_send_queue(server_control_cmd_t server_control_data);
       
     int size_send_queue();
 
-    int del_send_queue(serial_ms_msg_t* serial_sensor_data);
-
+    int del_send_queue(server_control_cmd_t* server_control_data);
+    
 #ifdef __cplusplus
 }
 

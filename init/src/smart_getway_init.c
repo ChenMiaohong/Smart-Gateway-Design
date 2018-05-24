@@ -14,6 +14,7 @@
 #include "smart_getway_init.h"
 #include "smart_getway_parse.h"
 
+case_controller_t* case_controller = NULL;
 
 case_controller_t* fill_case_controller() 
 {
@@ -71,7 +72,30 @@ int fill_sensor_controller(int serial_id, int dev_id, int sensor_id,
     sensor_control->gather_freq = get_sys_sensor_info_sensor_gather_freq(serial_id, dev_id, sensor_id);      
     return 0;
 }
-
+int sys_init() {
+    int serial_id = 0;
+    int dev_id = 0;
+    int sensor_id = 0;
+    case_controller = fill_case_controller();
+    printf("----=----\n");
+    for(serial_id = 0; serial_id < get_sys_serial_num(); serial_id++) {
+        printf("--serial_id:%d,serial_num = %d---\n",serial_id, get_sys_serial_num());
+        fill_serial_controller(serial_id, (case_controller->serial_control + serial_id));
+        printf("----1----\n");
+        for(dev_id = 0; dev_id < get_sys_serial_dev_num(serial_id); dev_id++) {
+            fill_dev_controller(serial_id, dev_id, ((case_controller->serial_control + serial_id)->dev_control+dev_id));
+          
+            for(sensor_id = 0; sensor_id < get_sys_dev_info_sensor_num(serial_id, dev_id) ; sensor_id++) {
+                fill_sensor_controller(serial_id, dev_id, sensor_id, 
+                 ((case_controller->serial_control + serial_id)->dev_control+dev_id)->sensor_control+sensor_id);
+            }
+        }
+    }
+    printf("%d\n",case_controller->serial_num);
+    printf("%d\n",(case_controller->serial_control + 0)->dev_num);
+    printf("%d\n",(((case_controller->serial_control + 0)->dev_control+0)->sensor_num));
+    return 0;
+}
 int set_opt(int fd,int nSpeed, int nBits, char nEvent, int nStop)
 {
 	struct termios newtio,oldtio;

@@ -18,6 +18,12 @@ add_subdirectory(validation)
 add_subdirectory(parse)
 add_subdirectory(init)
 add_subdirectory(forward)
+add_subdirectory(serial_task)
+add_subdirectory(usb_task)
+add_subdirectory(wifi_task)
+add_subdirectory(merge)
+add_subdirectory(net)
+
 add_subdirectory(core)
 
 

@@ -1,7 +1,9 @@
 #ifndef __SMART_GETWAY_PARSE_H
 #define __SMART_GETWAY_PARSE_H
 #include <stdint.h>
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 /*
  **@brief the define of ERROR VALUE
  */
@@ -44,5 +46,9 @@
 int get_sys_sensor_info_sensor_type(int serial_id, int dev_id, int sensor_id);
 int get_sys_sensor_info_sensor_gather_freq(int serial_id, int dev_id, int sensor_id);
 
- #endif
+#ifdef __cplusplus
+}
+#endif
+
+#endif
  
