@@ -19,7 +19,7 @@ typedef struct serial_ms_msg {
     char timestamp[MAX_TIME_LEN];
     uint16_t crc32;
 } serial_ms_msg_t;*/
-
+#define MAX_UPLOAD_DATA_LENGTH 1024*1024*10
 
 typedef struct wifi_data_des {
     uint8_t wifi_id;
@@ -39,7 +39,7 @@ typedef struct usb_cam_data {
     uint8_t usb_id;
     int length;
     char str_len[CAM_DATA_LEN];
-    unsigned char* data;
+    char* data;
     pthread_mutex_t cam_lock;
 } usb_cam_data_t;
 

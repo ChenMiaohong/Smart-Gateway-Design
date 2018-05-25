@@ -31,7 +31,8 @@
 char *json_file = NULL;
 pthread_mutex_t queue_lock = PTHREAD_MUTEX_INITIALIZER;
 extern int sensor_num ;
-merge_smart_getway_data_t* smart_getway_data;
+extern merge_smart_getway_data_t* smart_getway_data;
+unsigned char* server_json;
 
 /*
 test_module_list:
@@ -198,7 +199,8 @@ int create_child_pthread()
         printf("pthread_create read_func err\n");
     } 
     while(1) {
-        sleep(5);
+        sleep(1);
+        //merge_sys_data();
     }
     return 0;
 }
@@ -258,6 +260,7 @@ int core_init()
 	    printf("dcos init log failed, %d\n", ret);
      }
     sys_init();
+    
     smart_getway_data = (merge_smart_getway_data_t*)malloc(sizeof(merge_smart_getway_data_t));
     smart_getway_data->sensor_num = sensor_num;
     smart_getway_data->usb_num    = get_sys_usb_sensor_num();
@@ -334,19 +337,6 @@ int main()
 {
     core_init();
     create_child_pthread();
-    usb_cam_data_t cam_data;
-    get_usb_cam(0, &cam_data);
-    unsigned char* src = (unsigned char*)malloc(1024*1024*11);
-    unsigned char* str = (unsigned char*)malloc(1024*1024*10);
-    base64_encode(str, (unsigned char*)cam_data.data, cam_data.length, 1024*1024*10);
-    snprintf(src, 1024*1024*11, "\"usb_cam_data\": [{\"usb_id\": %d,\"length\": %d,\"str_len\": \"%s\",\"data\": \"%s\"}]",
-     5,20,"cmhcmh",str);
-   
-   
-    unsigned char* image = (unsigned char*)malloc(1024*1024*10);
-    base64_decode(image, str, strlen(str), 1024*1024*10);
-    printf("base64_encode:size = %d, length = %d, base64_decode:size = %d\n",strlen(str),cam_data.length, strlen(image));
-    str_to_mat(image, cam_data.length);
     return 0;
 }
 

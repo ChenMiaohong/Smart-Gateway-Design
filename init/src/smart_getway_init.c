@@ -16,6 +16,8 @@
 
 case_controller_t* case_controller = NULL;
 int sensor_num = 0;
+unsigned char* server_json = NULL;
+merge_smart_getway_data_t* smart_getway_data = NULL;
 case_controller_t* fill_case_controller() 
 {
     case_controller_t* case_controller = (case_controller_t*)malloc(sizeof(case_controller_t));
@@ -91,6 +93,11 @@ int sys_init() {
                  sensor_num++;
             }
         }
+    }
+    server_json = (unsigned char*)malloc(1024*1024*10);
+    if(!server_json) {
+        printf("alloc fail\n");
+        return 0;
     }
     printf("%d\n",case_controller->serial_num);
     printf("%d\n",(case_controller->serial_control + 0)->dev_num);

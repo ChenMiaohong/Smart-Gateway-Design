@@ -12,7 +12,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME} SHARED src/smart_getway_usb_cam.cpp)
 
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} stdc++ pthread smart_getway_parse smart_getway_init)
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} stdc++ base64 pthread smart_getway_parse smart_getway_init)
 
 target_include_directories(${PROJECT_NAME} PUBLIC include)
 

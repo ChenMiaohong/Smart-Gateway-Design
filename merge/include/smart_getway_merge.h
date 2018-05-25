@@ -16,7 +16,7 @@ extern "C" {
 
 
 
-
+int merge_sys_data();
 
 void* read_func(void* param);
 
